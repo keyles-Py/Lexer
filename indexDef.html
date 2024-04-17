@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lexer</title>
+</head>
+<body>
+    <h1>Lexer para el código (lenguaje Raccoon) <=・ω・=></h1>
+    <textarea id="codigo" placeholder="Escriba el código" rows="20" cols="50"></textarea>
+    <textarea id="lexerResultado" rows="20" cols="50"></textarea>
+    <div></div> <!-- si quitamos este div los botones se ruedan y queda feo XD-->
+    <button onclick="pruebaLexer()">Analizar código</button>
+    <button onclick="borrar()">Borrar código</button>
+    <script>
+        function pruebaLexer(){
+            const lexema = document.getElementById("codigo").value;
+            const regex = [
+                { token: 'Declarar variable', patron: /being(?= )/ },
+                { token: 'nombre variable', patron: /(?<=being\s+)([a-zA-Z][a-zA-Z0-9]*)\b/g },
+                { token: 'Operador asignación', patron: /(<-)/ },
+                { token: 'Asignación tipo de dato', patron: /\b(as)\b/ },
+                { token: 'Fin de linea', patron: /--(?=\n)/ },
+                { token: 'IF', patron: /(?<![a-zA-Z0-9])agree(?=:)/ },
+                { token: 'ELIF', patron: /(?<![a-zA-Z-0-9])other(?=:)/ },
+                { token: 'ELSE', patron: /(?<![a-zA-Z0-9])none(?=:)/ },
+                { token: 'Operador suma', patron: /(?<=[0-9])\+(?=[0-9])/ },
+                { token: 'Operador resta', patron: /(?<=[0-9])\-(?=[0-9])/ },
+                { token: 'Operador multiplicación', patron: /(?<=[0-9])\*(?=[0-9])/ },
+                { token: 'Operador división', patron: /(?<=[0-9])\/(?=[0-9])/ },
+                { token: 'numero', patron: /[0-9]+/g },
+                { token: 'String', patron: /"[^"]*"/g }, 
+                { token: 'palabra reservada para Funcion', patron: /(?<![a-zA-Z0-9])Task(?!\n)/ },
+                { token: 'Ciclo for', patron: /\bEach(?=\(\d+,\d+)/ },
+                { token: 'tipo entero', patron: /\bint(?=--)/ },
+                { token: 'tipo string', patron: /\bstr(?=--)/ },
+                { token: 'tipo float', patron: /\bfloat(?=--)/ },
+                { token: 'tipo nulo', patron: /\bnull(?=--)/ },
+                { token: 'valor boolean', patron: /\b(True|False)\b/ },
+                { token: 'tipo boolean', patron: /\bBool(?=--)/ },
+                { token: 'imprimir en consola', patron: /\bprint>>/ },
+                { token: 'nombre funcion', patron: /(?<=Task\s+)([a-zA-Z][a-zA-Z0-9]*)\b/g },
+            ];
+
+            var caja2 = document.getElementById("lexerResultado");
+            caja2.value = "";
+
+            for (const { token, patron } of regex) {
+                let match;
+                const resultado = [];
+                if(patron.global){
+                    while((match = patron.exec(lexema)) !== null){
+                        resultado.push(match[0]);  
+                    }
+                } else {
+                    match = patron.exec(lexema);
+                    if(match !== null){
+                        resultado.push(match[0]);
+                    }
+                }
+                if(resultado.length > 0){
+                    const mensaje = `Token: ${token} | Lexema: ${resultado.join(', ')}` 
+                    caja2.value += mensaje + '\n'
+                }
+            }
+        }
+        function borrar(){
+            var caja = document.getElementById("codigo");
+            var cajaaux2 = document.getElementById("lexerResultado");
+            caja.value = "";
+            cajaaux2.value = "";
+        }
+        function copiar(){
+            var ejemplo = document.getElementById("pruebaCodigo").textContent;
+
+            var textarea = document.createElement("textarea");
+            textarea.value = ejemplo;
+
+            document.body.appendChild(textarea);
+
+            textarea.select();
+            navigator.clipboard.writeText(textarea.value);
+
+            document.body.removeChild(textarea);
+
+            alert("Texto copiado!");
+        }
+    </script>
+    <h1>Sintaxis del lenguaje</h1>
+    <h2>Declarar variables</h2>
+    <p>La estructura para declarar variables es: <strong>(being) (nombre variable) (<-) (as) (tipo de dato) (--)</strong></p>
+    <p>Ejemplo: being a <- 1 as int--</p>
+
+    <h2>Operaciones aritmeticas</h2>
+    <p>Las operaciones aritmeticas son als siguientes:</p>
+    <p>Ejemplo: being c <- a+b as int--</p>
+    <p>being c <- a-b as int--</p>
+    <p>being c <- a*b as int--</p>
+    <p>being c <- a/b as int--</p>
+
+    <h2>Ciclos</h2>
+    <p>Los ciclos usan la palabra reservada Each y el signo -> para el valor sobre el cual van a iterar</p>
+    <p>Ejemplo:<pre>
+    <code>
+Each(1,10)->a:
+    print>>a+1--
+        </code>
+        </pre>
+    </p>
+
+    <h2>Funciones</h2>
+    <p>Las funciones usan la palabra reservada Task y pueden usar las estructuras de control de flujo (agree, other o none)</p>
+    <p>Ejemplo:</p>
+    <pre>
+        <code>
+Task numeroMayor(a, b):
+    agree: a<b: print>>b--
+    other: print>>a--
+none: print>>"los números son iguales"
+        </code>
+    </pre>
+
+    <h2>Ejemplo de código</h2>
+    <pre id="pruebaCodigo">
+        <code>
+being a <- 1 as int--
+being b <- 2 as int--
+
+being c <- a+b as int--
+
+Each(1,10)->c:
+    print>>c+1--
+
+Task numeroMayor(a, b):
+    agree: a<b: print>>b--
+        other: print>>a--
+    none: print>>"los numeros son iguales"
+        </code>
+    </pre>
+    <button onclick="copiar()">Copiar</button>
+</body>
+</html>
