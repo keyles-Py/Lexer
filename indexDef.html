@@ -21,7 +21,7 @@
                 { token: 'Operador asignación', patron: /(<-)/ },
                 { token: 'Asignación tipo de dato', patron: /\b(as)\b/ },
                 { token: 'Fin de linea', patron: /--(?=\n)/ },
-                { token: 'IF', patron: /(?<![a-zA-Z0-9])agree(?=:)/ },
+                { token: 'IF', patron: /(?<![a-zA-Z0-9])agree/ },
                 { token: 'ELIF', patron: /(?<![a-zA-Z-0-9])other(?=:)/ },
                 { token: 'ELSE', patron: /(?<![a-zA-Z0-9])none(?=:)/ },
                 { token: 'Operador suma', patron: /(?<=[0-9])\+(?=[0-9])/ },
@@ -132,9 +132,12 @@ Each(1,10)->c:
     print>>c+1--
 
 Task numeroMayor(a, b):
-    agree: a<b: print>>b--
-        other: print>>a--
-    none: print>>"los numeros son iguales"
+    agree a<b: 
+        print>>b--
+    other: 
+        print>>a--
+    none: 
+        print>>"los numeros son iguales"
         </code>
     </pre>
     <button onclick="copiar()">Copiar</button>
